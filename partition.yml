@@ -1,6 +1,6 @@
 - name: Create a new MBR label on the disk, along with the boot partition
   parted:
-    device: /dev/vdb
+    device: "{{ lfs_disk }}"
     label: msdos
     state: present
     number: 1
@@ -13,7 +13,7 @@
 
 - name: Create the root partition
   parted:
-    device: /dev/vdb
+    device: "{{ lfs_disk }}"
     state: present
     number: 2
     part_start: "{{part_info.partitions.0.end}}KiB"
@@ -21,24 +21,24 @@
 
 - name: Format the boot partition
   filesystem:
-    dev: /dev/vdb1
+    dev: "{{ lfs_disk }}1"
     fstype: ext4
 
 - name: Format the root partition
   filesystem:
-    dev: /dev/vdb2
+    dev: "{{ lfs_disk }}2"
     fstype: ext4
 
 - name: Mount the root partition
   mount:
     path: "{{ lfs_root }}"
-    src: /dev/vdb2
+    src: "{{ lfs_disk }}2"
     fstype: ext4
     state: mounted
 
 - name: Mount the boot partition
   mount:
     path: "{{ lfs_root }}/boot"
-    src: /dev/vdb1
+    src: "{{ lfs_disk }}1"
     fstype: ext4
     state: mounted

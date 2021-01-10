@@ -6,23 +6,22 @@
     owner: root
     group: root
 
-- name: Download the sources list
-  get_url:
-    url: http://www.linuxfromscratch.org/lfs/view/8.3-systemd/wget-list
-    dest: "{{ lfs_root }}/sources/wget-list"
+# urls and checksums are defined here instead of fetching from the lfs server as those need to be adapted in the future when downloads change
+- name: include sources vars
+  include_vars:
+    file: sources.yml
+    name: sources
 
-- name: Download all files from the sources list
+- name: Download all tar files from the sources list
   get_url:
-    url: "{{ item }}"
-    dest: "{{ lfs_root }}/sources/{{ item.split('/')[-1] }}"
-  with_items: "{{ lookup('file', lfs_root + '/sources/wget-list').splitlines() }}"
+    url: "{{ item.url }}"
+    dest: "{{ lfs_root }}/sources/{{ item.url.split('/')[-1] }}"
+    checksum: "md5:{{ item.md5 }}"
+  loop: "{{ sources['tars'] }}"
 
-- name: Download the md5sums file
+- name: Download all patch files from the sources list
   get_url:
-    url: http://www.linuxfromscratch.org/lfs/view/8.3-systemd/md5sums
-    dest: "{{ lfs_root }}/sources/md5sums"
-
-- name: Check the MD5s of the sources
-  command: md5sum -c md5sums
-  args:
-    chdir: "{{ lfs_root }}/sources/"
+    url: "{{ item.url }}"
+    dest: "{{ lfs_root }}/sources/{{ item.url.split('/')[-1] }}"
+    checksum: "md5:{{ item.md5 }}"
+  loop: "{{ sources['patches'] }}"

@@ -38,5 +38,5 @@
 
 - name: Create the LFS user's dotfiles
   become: yes
-  become_user: lfs
+  become_user: "{{ lfs_user }}"
   script: scripts/lfs-dotfiles.sh

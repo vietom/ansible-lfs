@@ -2,7 +2,9 @@
 - hosts: build_host
   become: true
   vars:
-    lfs_root: /mnt/lfs
+    lfs_root: /home/ansible/lfs
+    lfs_disk: /dev/sdb
+    lfs_user: ansible-lfs
   environment:
     LFS: "{{ lfs_root }}"
   tasks:
@@ -20,5 +22,5 @@
 
     - name: Build the LFS build tools
       become: true
-      become_user: lfs
+      become_user: "{{ lfs_user }}"
       include: build_tools.yml
